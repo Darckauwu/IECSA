@@ -15,17 +15,17 @@ if not client.connect(): #Sí al hacer la conexión hay un error, entra aquí
 	exit() #Cierra el script
 
 def apagarPorError(): #Funcion para apagar el motor si no se ha podido leer/escribir una variable
-	print("##--## MOTOR APAGADO POR ERROR EN CONEXION ##--##") #log
 	timeout = 0 #intentos
 	while True: #Mantiene el código corriendo permanentemente hasta que decida que hacer
 		escritura = client.write_coil(0,0,31) #Manda a apagar el motor
 		if not escritura.isError(): #Sí no hubo errores entra aquí
-			print("Direccion:",direccion," Valor:",escritura," Esclavo:",esclavo) #log
+			print("##--## MOTOR APAGADO POR ERROR EN CONEXION ##--##")
 			break #Rompe el while para seguir con el código
 		time.sleep(5) #Espera X segundos para volver a intentar a apagar el motor
 	#Este código se mantiene ejecutado hasta que se pueda apagar el motor. Sí no se apaga el motor, se quedará aquí para siempre.
 
 def leerDigital(direccion,esclavo): #funcion para leer digitales
+	global errorDigitales
 	timeout = 0 #intentos
 	while True: #Mantiene el código corriendo permanentemente hasta que decida que hacer
 		lectura = client.read_discrete_inputs(direccion,1,esclavo) #Lee la digital por medio de modbus
@@ -37,6 +37,7 @@ def leerDigital(direccion,esclavo): #funcion para leer digitales
 		print("ERROR ",timeout," EN LA LECTURA") #log
 		if timeout == 10: #Sí se cumplen 10 intentos entra aquí
 			apagarPorError() #Manda a apagar el motor por seguridad
+			errorDigitales = True
 			return False #Regresa un valor falso (0) para salir de la función
 		time.sleep(5) #Espera X segundos para volver a intentar a leer la digital
 
@@ -82,10 +83,14 @@ def automatizmoMotor(DI1,DI2): #funcion para decidir que hacer con el motor (enc
 		return leerSalida(0,31) #Regresa el valor actual del motor (no hay cambios en su estado)
 
 try: #Intenta hacer el código, esto con la finalidad de manejar los errores que pudieran ocurrir
+	errorDigitales = False
 	while True: # Mantiene el código corriendo permanentemente
 		print("########## Empezando lectura ##########") #log
-		DI1 = leerDigital(0,32) #Lectura de la digital 1
-		DI2 = leerDigital(1,32) #Lectura de la digital 2
+		while True:
+			DI1 = leerDigital(0,32) #Lectura de la digital 1
+			DI2 = leerDigital(1,32) #Lectura de la digital 2
+			if not errorDigitales:
+				break
 		escribirSalida(0,automatizmoMotor(DI1,DI2),31) #Apaga o prende el motor con respecto a las digitales
 		print("########## Esperando 5 segundos ##########") #log
 		time.sleep(5) #Espera X segundos para hacer otra lectura
