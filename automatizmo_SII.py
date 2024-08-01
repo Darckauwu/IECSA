@@ -31,6 +31,7 @@ def leerDigital(direccion,esclavo): #funcion para leer digitales
 		lectura = client.read_discrete_inputs(direccion,1,esclavo) #Lee la digital por medio de modbus
 		if not lectura.isError(): #Sí la lectura no tuvo errores entra aquí
 			print("Direccion:",direccion," Valor:",lectura," Esclavo:",esclavo) #log
+			errorDigitales = False
 			return lectura.bits[0] #Regresa el valor de la digital
 		#Sí hubo error en la lectura continúa aquí el código
 		timeout += 1 #Se agrega un intento
