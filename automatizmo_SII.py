@@ -89,6 +89,9 @@ try: #Intenta hacer el código, esto con la finalidad de manejar los errores que
 		print("########## Empezando lectura ##########") #log
 		while True:
 			DI1 = leerDigital(0,32) #Lectura de la digital 1
+			if not errorDigitales:
+				break
+		while True:
 			DI2 = leerDigital(1,32) #Lectura de la digital 2
 			if not errorDigitales:
 				break
