@@ -53,7 +53,6 @@ try:
 		escribirSalida(0,automatizmoMotor(DI1,DI2),31)
 		time.sleep(5)
 
-print(leerD(2))
 except Exception as e:
 	raise e
 finally:
