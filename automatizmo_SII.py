@@ -14,30 +14,47 @@ if not client.connect():
 	print("ERROR AL CONECTAR")
 	exit()
 
+def apagarPorError():
+	print("##--## MOTOR APAGADO POR ERROR EN CONEXION ##--##")
+	escribirSalida(0,0,31)
+
 def escribirSalida(direccion,valor,esclavo):
-	client.write_coil(direccion,valor,esclavo)
+	lectura = client.write_coil(direccion,valor,esclavo)
 	print("Direccion:",direccion," Valor:",valor," Esclavo:",esclavo)
+	while lectura.isError():
+		lectura = client.write_coil(direccion,valor,esclavo)
+		timeout += 1
+		print("ERROR ",timeout," EN LA ESCRITURA")
+		if timeout == 10:
+			apagarPorError()
+			break
+		time.sleep(5)
 
 def leerDigital(direccion,esclavo):
 	timeout = 0
 	lectura = client.read_discrete_inputs(direccion,1,esclavo)
-	'''
-	error = lectura.isError()
-	while error:
-		time.sleep(5)
-		lectura = leerDigital(direccion,esclavo)
-		error = lectura.isError()
+	while lectura.isError():
+		lectura = client.read_discrete_inputs(direccion,1,esclavo)
 		timeout += 1
 		print("ERROR ",timeout," EN LA LECTURA")
 		if timeout == 10:
-			escribirSalida(0,0,32)
-			escribirSalida(1,0,32)
-	'''
+			apagarPorError()
+			break
+		time.sleep(5)
 	print("Direccion:",direccion," Valor:",lectura," Esclavo:",esclavo)
 	return lectura.bits[0]
 
 def leerSalida(direccion,esclavo):
 	lectura = read_coils(direccion,esclavo)
+	while lectura.isError():
+		lectura = read_coils(direccion,esclavo)
+		timeout += 1
+		print("ERROR ",timeout," EN LA LECTURA")
+		if timeout == 10:
+			apagarPorError()
+			break
+		time.sleep(5)
+	print("---",lectura.bits[0],"---")
 	return lectura.bits[0]
 
 def automatizmoMotor(DI1,DI2):
@@ -55,22 +72,14 @@ def automatizmoMotor(DI1,DI2):
 
 try:
 	while True:
-		#escribirSalida(0,1,31)
-		#escribirSalida(1,1,31)
-		#escribirSalida(0,1,32)
-		#escribirSalida(1,1,32)
 		print("########## Empezando lectura ##########")
 		DI1 = leerDigital(0,32)
 		DI2 = leerDigital(1,32)
 		escribirSalida(0,automatizmoMotor(DI1,DI2),31)
 		print("########## Esperando 5 segundos ##########")
 		time.sleep(5)
-		#escribirSalida(0,0,31)
-		#escribirSalida(1,0,31)
-		#escribirSalida(0,0,32)
-		#escribirSalida(1,0,32)
 
 except Exception as e:
-	raise e
+	print(e)
 finally:
 	client.close()
