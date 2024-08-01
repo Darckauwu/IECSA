@@ -16,10 +16,12 @@ if not client.connect():
 
 def escribirSalida(direccion,valor,esclavo):
 	client.write_coil(direccion,valor,esclavo)
+	print("Direccion:",direccion," Valor:",valor," Esclavo:",esclavo)
 
 def leerDigital(direccion,esclavo):
 	timeout = 0
 	lectura = client.read_discrete_inputs(direccion,1,esclavo)
+	'''
 	error = lectura.isError()
 	while error:
 		time.sleep(5)
@@ -30,6 +32,8 @@ def leerDigital(direccion,esclavo):
 		if timeout == 10:
 			escribirSalida(0,0,32)
 			escribirSalida(1,0,32)
+	'''
+	print("Direccion:",direccion," Valor:",lectura," Esclavo:",esclavo)
 	return lectura.bits[0]
 
 def leerSalida(direccion,esclavo):
@@ -38,20 +42,33 @@ def leerSalida(direccion,esclavo):
 
 def automatizmoMotor(DI1,DI2):
 	if not DI1 and not DI2:
-		return true
-	elif D1 and DI2:
-		return false
+		print("--- Encender motor ---")
+		return True
+	elif DI1 and DI2:
+		print("--- Apagar motor ---")
+		return False
 	else:
+		print("--- Se queda igual ---")
 		return leerSalida(0,31)
 
 
 
 try:
 	while True:
+		#escribirSalida(0,1,31)
+		#escribirSalida(1,1,31)
+		#escribirSalida(0,1,32)
+		#escribirSalida(1,1,32)
+		print("########## Empezando lectura ##########")
 		DI1 = leerDigital(0,32)
 		DI2 = leerDigital(1,32)
 		escribirSalida(0,automatizmoMotor(DI1,DI2),31)
+		print("########## Esperando 5 segundos ##########")
 		time.sleep(5)
+		#escribirSalida(0,0,31)
+		#escribirSalida(1,0,31)
+		#escribirSalida(0,0,32)
+		#escribirSalida(1,0,32)
 
 except Exception as e:
 	raise e
