@@ -1,0 +1,18 @@
+# Instalar Python desde CLI
+opkg -e /etc/opkg/openwrt/distfeeds.conf update
+opkg -e /etc/opkg/openwrt/distfeeds.conf install python3
+# En caso de que pip no se instale
+opkg -e /etc/opkg/openwrt/distfeeds.conf install python3-pip
+
+#Instalar modulos necesarios para el script de modbus
+python3 -m pip install --upgrade pip
+pip install pymodbus
+pip install pyserial
+
+#Descargar programa
+wget https://github.com/Darckauwu/IECSA/blob/proyecto-SII/automatizmo_SII.py?raw=true
+
+#Inicio del programa al arrancar teltonika
+vi /etc/rc.local
+#Dentro del editor ponemos la siguiente linea:
+/usr/bin/python3 /root/automatizmo_SII.py &
