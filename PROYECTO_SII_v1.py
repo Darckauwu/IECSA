@@ -17,7 +17,7 @@ if not client.connect(): #Sí al hacer la conexión hay un error, entra aquí
 def apagarPorError(): #Funcion para apagar el motor si no se ha podido leer/escribir una variable
         timeout = 0 #intentos
         while True: #Mantiene el código corriendo permanentemente hasta que decida que hacer
-                escritura = client.write_coil(0,0,31) #Manda a apagar el motor
+                escritura = client.write_coil(0,0,32) #Manda a apagar el motor
                 if not escritura.isError(): #Sí no hubo errores entra aquí
                         print("##--## MOTOR APAGADO POR ERROR EN CONEXION ##--##")
                         break #Rompe el while para seguir con el código
@@ -81,21 +81,21 @@ def automatizmoMotor(DI1,DI2): #funcion para decidir que hacer con el motor (enc
                 return False #Regresa el valor para apagar el motor
         else: #Sí no se cumple lo anterior quiere decir que el agua está a la mitad (llenandose/vaciandose)
                 print("--- Se queda igual ---") #log
-                return leerSalida(0,31) #Regresa el valor actual del motor (no hay cambios en su estado)
+                return leerSalida(0,32) #Regresa el valor actual del motor (no hay cambios en su estado)
 
 try: #Intenta hacer el código, esto con la finalidad de manejar los errores que pudieran ocurrir
         errorDigitales = False
         while True: # Mantiene el código corriendo permanentemente
                 print("########## Empezando lectura ##########") #log
                 while True:
-                        DI1 = leerDigital(0,32) #Lectura de la digital 1
+                        DI1 = leerDigital(0,31) #Lectura de la digital 1
                         if not errorDigitales:
                                 break
                 while True:
-                        DI2 = leerDigital(1,32) #Lectura de la digital 2
+                        DI2 = leerDigital(1,31) #Lectura de la digital 2
                         if not errorDigitales:
                                 break
-                escribirSalida(0,automatizmoMotor(DI1,DI2),31) #Apaga o prende el motor con respecto a las digitales
+                escribirSalida(0,automatizmoMotor(DI1,DI2),32) #Apaga o prende el motor con respecto a las digitales
                 print("########## Esperando 5 segundos ##########") #log
                 time.sleep(5) #Espera X segundos para hacer otra lectura
 
