@@ -10,10 +10,11 @@ pip install pymodbus
 pip install pyserial
 
 #Descargar programa
-wget https://github.com/Darckauwu/IECSA/blob/main/PROYECTO_SII_v1.py?raw=true
-wget https://github.com/Darckauwu/IECSA/blob/main/PROYECTO_SII_v1_SensorBares.py?raw=true
+wget https://github.com/Darckauwu/IECSA/blob/main/PROYECTO_SII_v1.py?raw=true                  #Si es por flotadores
+wget https://github.com/Darckauwu/IECSA/blob/main/PROYECTO_SII_v1_SensorBares.py?raw=true      #Si es por sensor de presion
 
 #Inicio del programa al arrancar teltonika
 vi /etc/rc.local
 #Dentro del editor ponemos la siguiente linea:
-/usr/bin/python3 /root/automatizmo_SII.py &
+/usr/bin/python3 /root/PROYECTO_SII_v1.py &                                                    #Si es por flotadores
+/usr/bin/python3 /root/PROYECTO_SII_v1_SensorBares.py -max 12.4 -min 10.9 -bar 3 &             #Si es por sensor de presion
